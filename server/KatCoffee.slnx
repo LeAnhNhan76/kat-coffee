@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="KatCoffee.API/KatCoffee.API.csproj" />
+  <Project Path="KatCoffee.Domain/KatCoffee.Domain.csproj" />
+  <Project Path="KatCoffee.Infrastructure/KatCoffee.Infrastructure.csproj" />
+</Solution>
