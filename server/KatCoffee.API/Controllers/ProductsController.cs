@@ -17,12 +17,32 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetProducts([FromQuery] string? category)
+    public async Task<IActionResult> GetProducts(
+        [FromQuery] string? category,
+        [FromQuery] string? search,
+        [FromQuery] decimal? minPrice,
+        [FromQuery] decimal? maxPrice,
+        [FromQuery] bool availableOnly = false)
     {
         var query = _context.Products.Include(p => p.Category).AsQueryable();
 
         if (!string.IsNullOrEmpty(category))
             query = query.Where(p => p.Category!.Slug == category);
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var searchTerm = search.Trim();
+            query = query.Where(p => p.Name.Contains(searchTerm));
+        }
+
+        if (minPrice.HasValue)
+            query = query.Where(p => p.Price >= minPrice.Value);
+
+        if (maxPrice.HasValue)
+            query = query.Where(p => p.Price <= maxPrice.Value);
+
+        if (availableOnly)
+            query = query.Where(p => p.IsAvailable);
 
         return Ok(await query.ToListAsync());
     }
