@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useAppSelector } from '../store';
+import { getValidPriceRange } from '../store/filterSlice';
 
 export interface Product {
   id: string;
@@ -14,6 +15,7 @@ const API_RESOURCE_URL = 'http://localhost:5001/api/Products';
 
 export const useProducts = () => {
   const filters = useAppSelector((state) => state.filters);
+  const priceRange = getValidPriceRange(filters.minPrice, filters.maxPrice);
 
   return useQuery({
     queryKey: ['products', filters],
@@ -22,6 +24,9 @@ export const useProducts = () => {
         params: {
           category: filters.categoryId || undefined,
           search: filters.searchTerm || undefined,
+          minPrice: priceRange?.minPrice ?? undefined,
+          maxPrice: priceRange?.maxPrice ?? undefined,
+          availableOnly: filters.availableOnly || undefined,
         },
       });
       return response.data;
